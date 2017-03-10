@@ -1,0 +1,53 @@
+22:53:54.442 INFO [main] org.lenskit.cli.Main: Starting LensKit 3.0-M1 on Java 1.8.0_121 from Oracle Corporation
+22:53:54.463 DEBUG [main] org.lenskit.LenskitInfo: have 5573 active revisions
+22:53:54.468 DEBUG [main] org.lenskit.cli.Main: Built from Git revision c0210fa3281ef8b15b0959bcd5fced43c5fec38a
+22:53:54.468 DEBUG [main] org.lenskit.cli.Main: Using VM 'Java HotSpot(TM) 64-Bit Server VM' version 25.121-b13 from Oracle Corporation
+22:53:54.468 INFO [main] org.lenskit.cli.Main: Have 4 processors and heap limit of 1796 MiB
+22:53:54.477 INFO [main] org.lenskit.cli.util.RecommenderLoader: creating fresh recommender
+22:53:54.701 INFO [main] org.lenskit.config.ConfigurationLoader: loading script from file:/D:/project/recommender%20System%20Course/week2/nonpers-assignment/etc/lift-assoc.groovy
+22:53:55.089 DEBUG [main] org.lenskit.data.dao.file.TextEntitySource: loading source ratings with base URI file:/D:/project/recommender%20System%20Course/week2/nonpers-assignment/data/movielens.yml
+22:53:55.090 DEBUG [main] org.lenskit.data.dao.file.TextEntitySource: resolved file URI: file:/D:/project/recommender%20System%20Course/week2/nonpers-assignment/data/ratings.csv
+22:53:55.098 INFO [main] org.lenskit.data.dao.file.TextEntitySource: loading text file source ratings to read from file:/D:/project/recommender%20System%20Course/week2/nonpers-assignment/data/ratings.csv
+22:53:55.102 DEBUG [main] org.lenskit.data.dao.file.TextEntitySource: ratings: using delimiter ,
+22:53:55.102 DEBUG [main] org.lenskit.data.dao.file.TextEntitySource: ratings: reading header
+22:53:55.103 DEBUG [main] org.lenskit.data.dao.file.TextEntitySource: ratings: reading entities of type EntityType[rating]
+22:53:55.134 DEBUG [main] org.lenskit.data.dao.file.TextEntitySource: class org.lenskit.data.ratings.RatingBuilder: using entity builder {}
+22:53:55.134 DEBUG [main] org.lenskit.data.dao.file.TextEntitySource: loading source movies with base URI file:/D:/project/recommender%20System%20Course/week2/nonpers-assignment/data/movielens.yml
+22:53:55.134 DEBUG [main] org.lenskit.data.dao.file.TextEntitySource: resolved file URI: file:/D:/project/recommender%20System%20Course/week2/nonpers-assignment/data/movies.csv
+22:53:55.134 INFO [main] org.lenskit.data.dao.file.TextEntitySource: loading text file source movies to read from file:/D:/project/recommender%20System%20Course/week2/nonpers-assignment/data/movies.csv
+22:53:55.134 DEBUG [main] org.lenskit.data.dao.file.TextEntitySource: movies: using delimiter ,
+22:53:55.134 DEBUG [main] org.lenskit.data.dao.file.TextEntitySource: movies: reading header
+22:53:55.134 DEBUG [main] org.lenskit.data.dao.file.TextEntitySource: movies: reading entities of type EntityType[item]
+22:53:55.134 DEBUG [main] org.lenskit.data.dao.file.TextEntitySource: class org.lenskit.data.entities.BasicEntityBuilder: using entity builder {}
+22:53:55.134 DEBUG [main] org.lenskit.data.dao.file.TextEntitySource: loading source tags with base URI file:/D:/project/recommender%20System%20Course/week2/nonpers-assignment/data/movielens.yml
+22:53:55.134 DEBUG [main] org.lenskit.data.dao.file.TextEntitySource: resolved file URI: file:/D:/project/recommender%20System%20Course/week2/nonpers-assignment/data/tags.csv
+22:53:55.135 INFO [main] org.lenskit.data.dao.file.TextEntitySource: loading text file source tags to read from file:/D:/project/recommender%20System%20Course/week2/nonpers-assignment/data/tags.csv
+22:53:55.135 DEBUG [main] org.lenskit.data.dao.file.TextEntitySource: tags: using delimiter ,
+22:53:55.135 DEBUG [main] org.lenskit.data.dao.file.TextEntitySource: tags: reading header
+22:53:55.135 DEBUG [main] org.lenskit.data.dao.file.TextEntitySource: tags: reading entities of type EntityType[item-tag]
+22:53:55.135 DEBUG [main] org.lenskit.data.dao.file.TextEntitySource: class org.lenskit.data.entities.BasicEntityBuilder: using entity builder {}
+22:53:55.137 DEBUG [main] org.lenskit.LenskitRecommenderEngineBuilder: building graph from 3 configurations
+22:53:55.183 DEBUG [main] org.lenskit.inject.RecommenderInstantiator: replacing nodes in graph with 9 nodes
+22:53:55.187 DEBUG [main] org.lenskit.inject.RecommenderInstantiator: found 5 shared nodes
+22:53:56.310 INFO [main] org.lenskit.data.dao.file.StaticDataSource: deriving entity type EntityType[user] from EntityType[rating] (column TypedName[user: long])
+22:53:56.378 INFO [main] org.lenskit.data.dao.file.StaticDataSource: deriving entity type EntityType[item] from EntityType[rating] (column TypedName[item: long])
+22:53:56.415 DEBUG [main] org.lenskit.data.entities.EntityCollectionBuilder: built collection of 2500 entities with type EntityType[item] and 2 indexes
+22:53:56.442 DEBUG [main] org.lenskit.data.entities.EntityCollectionBuilder: built collection of 264505 entities with type EntityType[rating] and 2 indexes
+22:53:56.451 DEBUG [main] org.lenskit.data.entities.EntityCollectionBuilder: built collection of 94875 entities with type EntityType[item-tag] and 2 indexes
+22:53:56.452 DEBUG [main] org.lenskit.data.entities.EntityCollectionBuilder: built collection of 862 entities with type EntityType[user] and 2 indexes
+22:54:16.665 DEBUG [main] org.lenskit.mooc.nonpers.assoc.LiftAssociationModelProvider: xId:2761 yId:340 score:4.489583333333333
+22:54:16.667 DEBUG [main] org.lenskit.mooc.nonpers.assoc.LiftAssociationModelProvider: xId:2761 yId:1649 score:4.489583333333333
+22:54:16.668 DEBUG [main] org.lenskit.mooc.nonpers.assoc.LiftAssociationModelProvider: xId:2761 yId:332 score:4.37734375
+22:54:16.672 DEBUG [main] org.lenskit.mooc.nonpers.assoc.LiftAssociationModelProvider: xId:2761 yId:3213 score:4.316907051282051
+22:54:16.672 DEBUG [main] org.lenskit.mooc.nonpers.assoc.LiftAssociationModelProvider: xId:2761 yId:1016 score:4.489583333333333
+22:54:16.675 DEBUG [main] org.lenskit.mooc.nonpers.assoc.LiftAssociationModelProvider: xId:2761 yId:2439 score:4.489583333333333
+22:54:16.675 DEBUG [main] org.lenskit.mooc.nonpers.assoc.LiftAssociationModelProvider: xId:2761 yId:631 score:4.8977272727272725
+22:54:16.677 DEBUG [main] org.lenskit.mooc.nonpers.assoc.LiftAssociationModelProvider: xId:2761 yId:3615 score:4.545703125
+22:54:16.679 DEBUG [main] org.lenskit.mooc.nonpers.assoc.LiftAssociationModelProvider: xId:2761 yId:2736 score:4.329241071428571
+22:54:16.680 DEBUG [main] org.lenskit.mooc.nonpers.assoc.LiftAssociationModelProvider: xId:2761 yId:2532 score:4.810267857142857
+22:54:19.421 DEBUG [main] org.lenskit.mooc.nonpers.assoc.AssociationModel: transforming input map for 2500 items into log data
+22:54:19.638 DEBUG [main] org.lenskit.inject.RecommenderInstantiator: final graph has 9 nodes
+22:54:19.640 INFO [main] org.lenskit.cli.util.RecommenderLoader: built recommender in 24.50 s
+22:54:19.643 INFO [main] org.lenskit.cli.commands.GlobalRecommend: using 1 reference items: [2761]
+22:54:19.646 INFO [main] org.lenskit.cli.commands.GlobalRecommend: recommended in 2.078 ms
+22:54:19.646 INFO [main] org.lenskit.cli.Main: If you use LensKit in published research, please see http://lenskit.org/research/
