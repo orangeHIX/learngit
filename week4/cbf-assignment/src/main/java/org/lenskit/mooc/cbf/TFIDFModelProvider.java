@@ -59,7 +59,6 @@ public class TFIDFModelProvider implements Provider<TFIDFModel> {
             // Create a work vector to accumulate this item's tag vector.
             Map<String, Double> work = new HashMap<>();
 
-            boolean isCounted = false;
             for (Entity tagApplication : dao.query(TagData.ITEM_TAG_TYPE)
                                             .withAttribute(TagData.ITEM_ID, item)
                                             .get()) {
