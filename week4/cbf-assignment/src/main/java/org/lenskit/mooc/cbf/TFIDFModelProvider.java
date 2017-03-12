@@ -59,12 +59,24 @@ public class TFIDFModelProvider implements Provider<TFIDFModel> {
             // Create a work vector to accumulate this item's tag vector.
             Map<String, Double> work = new HashMap<>();
 
+            boolean isCounted = false;
             for (Entity tagApplication : dao.query(TagData.ITEM_TAG_TYPE)
                                             .withAttribute(TagData.ITEM_ID, item)
                                             .get()) {
                 String tag = tagApplication.get(TagData.TAG);
-                // TODO Count this tag application in the term frequency vector
-                // TODO Also count it in the document frequencey vector when needed
+                // Count this tag application in the term frequency vector
+                if( ! work.containsKey(tag)){
+                    work.put(tag, 1.0d);
+                }else{
+                    work.put(tag, work.get(tag) +1.0d);
+                }
+                // Also count it in the document frequency vector when needed
+                if(! docFreq.containsKey(tag)){
+                    docFreq.put(tag, 0d);
+                }
+                if( work.get(tag) <= 1d){
+                    docFreq.put(tag, docFreq.get(tag) + 1d);
+                }
             }
 
             itemVectors.put(item, work);
@@ -87,10 +99,21 @@ public class TFIDFModelProvider implements Provider<TFIDFModel> {
         for (Map.Entry<Long, Map<String, Double>> entry : itemVectors.entrySet()) {
             Map<String, Double> tv = new HashMap<>(entry.getValue());
 
+
+            double length = 0d;
             // TODO Convert this vector to a TF-IDF vector
+            for(Map.Entry<String, Double> e : tv.entrySet()){
+                double value = e.getValue() * docFreq.get(e.getKey());
+                e.setValue(value);
+                length += Math.pow(value,2);
+            }
+            length = Math.sqrt(length);
             // TODO Normalize the TF-IDF vector to be a unit vector
             // Normalize it by dividing each element by its Euclidean norm, which is the
             // square root of the sum of the squares of the values.
+            for(Map.Entry<String, Double> e : tv.entrySet()){
+                e.setValue(e.getValue()/length);
+            }
 
             modelData.put(entry.getKey(), tv);
         }
