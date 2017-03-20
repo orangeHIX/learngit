@@ -23,6 +23,7 @@ import org.lenskit.util.math.Vectors;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.*;
+import java.util.regex.Matcher;
 
 /**
  * User-user item scorer.
@@ -47,42 +48,73 @@ public class SimpleUserUserItemScorer extends AbstractItemScorer {
     public ResultMap scoreWithDetails(long user, @Nonnull Collection<Long> items) {
         // TODO Score the items for the user with user-user CF
 
-        Long2DoubleOpenHashMap ratings = getUserRatingVector(user);
-        double sum = 0;
-        for(Map.Entry<Long, Double> entry : ratings.entrySet()){
-            sum += entry.getValue();
+        Long2DoubleOpenHashMap u = getUserRatingVector(user);
+        double uMean = Vectors.mean(u);
+        for(Long i : u.keySet()){
+            u.addTo(i, -uMean);
         }
-        double mean = sum / ratings.size();
+        double uEuclideanNorm = Vectors.euclideanNorm(u);
+
+        //Long2DoubleOpenHashMap uItemPrediction = new Long2DoubleOpenHashMap(items.size());
+        List<Result> results = new ArrayList<>();
+        for(long item : items) {
+            List<Rating> history = dao.query(Rating.class)
+                    .withAttribute(CommonAttributes.ITEM_ID, item).get();
+
+            if(history.size()<2) continue;  //Refuse to score items if there are not at least 2 neighbors to contribute to the item’s score
+
+            List<UserCos> list = new ArrayList<>();
+            for(Rating r : history) {
+                Long2DoubleOpenHashMap v = getUserRatingVector(r.getUserId());
+                // Use mean-centering to normalize ratings for scoring
+                double userMean = Vectors.mean(v);
+                for(Long i : v.keySet()){
+                    v.addTo(i, -userMean);
+                }
+                double cos = Vectors.dotProduct(u,v)/(uEuclideanNorm * Vectors.euclideanNorm(v));
+                list.add(new UserCos(r.getUserId(), r.getValue(), userMean, cos));
+            }
+
+            /*For each item’s score, use the 30 most similar users who have rated the item and
+              whose similarity to the target user is positive*/
+            Collections.sort(list, new Comparator<UserCos>() {
+                @Override
+                public int compare(UserCos o1, UserCos o2) {
+                    if(o1.cos-o2.cos > 0) return -1;
+                    else if(o1.cos-o2.cos<0) return 1;
+                    else return 0;
+                }
+            });
+            List<UserCos> top30 = list.subList(0, Math.min(30, list.size()));
+
+            //cosine similarity
+            double numerator = 0;
+            double denominator = 0;
+            for(UserCos v : top30){
+                numerator += v.cos*(v.rating-v.mean);
+                denominator += Math.abs(v.cos);
+            }
+            //uItemPrediction.put(item, uMean + numerator/denominator);
+            results.add(Results.create(item, uMean + numerator/denominator));
+        }
+
+        return Results.newResultMap(results);
     }
 
     static class UserCos{
         long user;
+        double rating;
         double cos;
         double mean;
 
-        public UserCos(long user, double mean, double cos) {
+        public UserCos(long user, double rating, double mean, double cos) {
             this.user = user;
+            this.rating = rating;
             this.mean = mean;
             this.cos = cos;
         }
     }
 
-    private void getSimilarUser(Long2DoubleOpenHashMap u, Collection<Long> items){
-        double uEuclideanNorm = Vectors.euclideanNorm(u);
-
-        for(Long item : items) {
-            List<IdBox<List<Rating>>> history = dao.query(Rating.class)
-                    .withAttribute(CommonAttributes.ITEM_ID, item).groupBy(CommonAttributes.USER_ID).get();
-
-            List<UserCos> list = new ArrayList<>();
-            for(IdBox<List<Rating>> idBox : history) {
-                Long2DoubleOpenHashMap v = getUserRatingVector(idBox.getId());
-                double userMean = Vectors.mean(v);
-                double cos = Vectors.dotProduct(u,v)/(uEuclideanNorm * Vectors.euclideanNorm(v));
-                list.add(new UserCos(idBox.getId(), userMean, cos));
-            }
-        }
-    }
 
     /**
      * Get a user's rating vector.
