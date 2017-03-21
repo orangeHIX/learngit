@@ -33,6 +33,8 @@ public class SimpleUserUserItemScorer extends AbstractItemScorer {
     private final DataAccessObject dao;
     private final int neighborhoodSize;
 
+
+    private final static int MAX_NEIGHBOR_NUM = 30;
     /**
      * Instantiate a new user-user item scorer.
      * @param dao The data access object.
@@ -63,8 +65,9 @@ public class SimpleUserUserItemScorer extends AbstractItemScorer {
 
             if(history.size()<2) continue;  //Refuse to score items if there are not at least 2 neighbors to contribute to the item’s score
 
-            List<UserCos> list = new ArrayList<>();
+            ArrayList<UserCos> list = new ArrayList<>();
             for(Rating r : history) {
+                if(r.getUserId() == user) continue;
                 Long2DoubleOpenHashMap v = getUserRatingVector(r.getUserId());
                 // Use mean-centering to normalize ratings for scoring
                 double userMean = Vectors.mean(v);
@@ -85,7 +88,14 @@ public class SimpleUserUserItemScorer extends AbstractItemScorer {
                     else return 0;
                 }
             });
-            List<UserCos> top30 = list.subList(0, Math.min(30, list.size()));
+            int endIndex = 0;
+            for(;endIndex < list.size() && endIndex < MAX_NEIGHBOR_NUM; endIndex++){
+                if(list.get(endIndex).cos <= 0){
+                    break;
+                }
+            }
+            if(endIndex < 2) continue;      //Refuse to score items if there are not at least 2 neighbors to contribute to the item’s score
+            List<UserCos> top30 = list.subList(0, endIndex);
 
             //cosine similarity
             double numerator = 0;
