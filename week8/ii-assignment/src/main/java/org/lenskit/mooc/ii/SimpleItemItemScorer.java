@@ -14,10 +14,7 @@ import org.lenskit.util.TopNScoredIdAccumulator;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author <a href="http://www.grouplens.org">GroupLens Research</a>
@@ -45,14 +42,42 @@ public class SimpleItemItemScorer extends AbstractItemScorer {
         Long2DoubleMap itemMeans = model.getItemMeans();
         Long2DoubleMap ratings = getUserRatingVector(user);
 
-        // TODO Normalize the user's ratings by subtracting the item mean from each one.
+        // Normalize the user's ratings by subtracting the item mean from each one.
+        // Mean center the ratings.
+        for (Map.Entry<Long, Double> entry : ratings.entrySet()) {
+            entry.setValue(entry.getValue() - itemMeans.get(entry.getKey()));
+        }
 
         List<Result> results = new ArrayList<>();
 
         for (long item: items ) {
-            // TODO Compute the user's score for each item, add it to results
+            // Compute the user's score for each item, add it to results
+            Long2DoubleMap nei = model.getNeighbors(item);
+            double numerator = 0;
+            double denominator = 0;
+            List<Map.Entry<Long,Double>> candidate = new ArrayList<>();
+            for(Map.Entry<Long,Double> entry : nei.entrySet()){
+                if(ratings.containsKey(entry.getKey()))
+                    candidate.add(entry);
+            }
+            if(candidate.size() > 20) {
+                Collections.sort(candidate, new Comparator<Map.Entry<Long, Double>>() {
+                    @Override
+                    public int compare(Map.Entry<Long, Double> o1, Map.Entry<Long, Double> o2) {
+                        if (o1.getValue() - o2.getValue() < 0) return 1;
+                        else if (o1.getValue() - o2.getValue() > 0) return -1;
+                        else return 0;
+                    }
+                });
+                candidate = candidate.subList(0, 20);
+            }
+            for(Map.Entry<Long,Double> entry : candidate) {
+                numerator += ratings.get(entry.getKey()) * entry.getValue();
+                denominator += Math.abs(entry.getValue());
+            }
+            double score = itemMeans.get(item) + numerator/denominator;
+            results.add(Results.create(item, score));
         }
-
         return Results.newResultMap(results);
 
     }
