@@ -49,7 +49,21 @@ public class LinearBlendItemScorer extends AbstractItemScorer {
     public ResultMap scoreWithDetails(long user, @Nonnull Collection<Long> items) {
         List<Result> results = new ArrayList<>();
 
-        // TODO Compute hybrid scores
+        // Compute hybrid scores
+        for(Long item : items){
+            Result leftScoreResult = leftScorer.score(user, item);
+            Result rightScoreResult = rightScorer.score(user, item);
+            double bias = biasModel.getIntercept() + biasModel.getItemBias(item) + biasModel.getUserBias(user);
+            double leftScore = 0;
+            double rightScore = 0;
+            if(leftScoreResult != null && leftScoreResult.hasScore()){
+                leftScore = leftScoreResult.getScore() - bias;
+            }
+            if(rightScoreResult != null && rightScoreResult.hasScore()){
+                rightScore = rightScoreResult.getScore() - bias;
+            }
+            results.add(Results.create(item, bias + (1-blendWeight) * leftScore + blendWeight * rightScore));
+        }
 
         return Results.newResultMap(results);
     }
